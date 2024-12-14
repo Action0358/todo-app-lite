@@ -14,7 +14,7 @@ import (
 var storageInstance = storage.NewMemoryStorage()
 
 // `/todos` エンドポイントを処理
-func TodosHandlers(w http.ResponseWriter, r *http.Request) {
+func TodosHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		// 全ての Todo を取得
@@ -55,7 +55,7 @@ func TodosHandlers(w http.ResponseWriter, r *http.Request) {
 }
 
 // `/todos/{id}` エンドポイントを取得
-func TodoHandlers(w http.ResponseWriter, r *http.Request) {
+func TodoHandler(w http.ResponseWriter, r *http.Request) {
 	// リクエスト URL から ID を抽出
 	idStr := strings.TrimPrefix(r.URL.Path, "/todos/")
 	// 文字列を整数に変換
