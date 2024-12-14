@@ -9,7 +9,7 @@ import (
 
 func main() {
 	// Restfulなルーティング設定
-	http.HandleFunc("/todos", handlers.TodosHandler) // 一覧取得、新規作成
+	http.HandleFunc("/todos", handlers.TodosHandler)  // 一覧取得、新規作成
 	http.HandleFunc("/todos/", handlers.TodoHandler) // 特定のタスクの操作
 
 	// サーバー起動
