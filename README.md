@@ -27,19 +27,19 @@
 - **JavaScript**: フロントエンドからAPIを呼び出し、タスクの追加・削除・更新を行います。
 
 ### バックエンド
-- **Go (Golang)**: RESTful APIを提供するサーバーを構築します。また、Goサーバーは静的コンテンツ（HTML, CSS, JS）も提供し、フロントエンドとバックエンドが単一のサーバーで完結します。
-  - 使用するGoパッケージ:
-    - `net/http` - HTTPサーバーの作成。
-    - `encoding/json` - JSON形式のリクエスト/レスポンス処理。
-    - `github.com/jinzhu/gorm` - ORM（Object Relational Mapping）ライブラリを使用してSQLiteと接続。
+**Go (Golang)**: RESTful APIを提供するサーバーを構築します。また、Goサーバーは静的コンテンツ（HTML, CSS, JS）も提供し、フロントエンドとバックエンドが単一のサーバーで完結します。
+- 使用するGoパッケージ:
+  - `net/http` - HTTPサーバーの作成。
+  - `encoding/json` - JSON形式のリクエスト/レスポンス処理。
+  - `github.com/jinzhu/gorm` - ORM（Object Relational Mapping）ライブラリを使用してSQLiteと接続。
 
 ### データベース
-- **SQLite**: 軽量で高速なデータベース。タスクの情報（タイトル、状態など）を保存します。
-  - **テーブル構造**:
-    - `tasks`:
-      - `id` (INTEGER, 主キー)
-      - `title` (TEXT, タスク名)
-      - `completed` (BOOLEAN, 完了状態)
+**SQLite**: 軽量で高速なデータベース。タスクの情報（タイトル、状態など）を保存します。
+- **テーブル構造**:
+- `tasks`:
+  - `id` (INTEGER, 主キー)
+  - `title` (TEXT, タスク名)
+  - `completed` (BOOLEAN, 完了状態)
 
 ## セットアップ方法
 
@@ -60,10 +60,17 @@ cd todo-app-lite
 2. Dockerコンテナのビルドと起動
 ```bash
 docker-compose up --build
-docker-compose up -d
+docker-compose up
 ```
 
-3. アプリケーションへのアクセス
+3. コンテナにアクセスしてSQLiteをインストール
+```bash
+docker exec -it server /bin/bash
+apt-get update
+apt-get install sqlite3
+```
+
+4. アプリケーションへのアクセス
 ```bash
 http://localhost:8080
 ```

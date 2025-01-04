@@ -10,15 +10,20 @@ import (
 	"github.com/Action0358/todo-app-lite/server/storage"
 )
 
-// メモリーストレージの新しいインスタンスを作成
-var storageInstance = storage.NewMemoryStorage()
+// SQLite ストレージのポインタ変数を宣言
+var handlerStorage *storage.SQLiteStorage
+
+// 外部からストレージを設定する関数
+func SetStorage(storage *storage.SQLiteStorage) {
+	handlerStorage = storage
+}
 
 // `/todos` エンドポイントを処理
-func TodosHandler(w http.ResponseWriter, r *http.Request) {
+func TodosHandlers(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		// 全ての Todo を取得
-		todos, err := storageInstance.GetAll()
+		todos, err := handlerStorage.GetAll()
 		// 取得に失敗した場合、 HTTP 500 エラーを返す
 		if err != nil {
 			http.Error(w, "Failed to retrieve todos", http.StatusInternalServerError)
@@ -40,22 +45,23 @@ func TodosHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		// ストレージに新しい Todo を追加
-		err = storageInstance.Add(newTodo)
+		id, err := handlerStorage.Add(newTodo)
 		// 追跡処理でエラーが発生した場合、 500 Internal Server Error を返す
 		if err != nil {
 			http.Error(w, "Failed to add todo", http.StatusInternalServerError)
 			return
 		}
+		// 新しいタスクの ID をレスポンスに含める
+		newTodo.ID = int(id)
 		// レスポンスヘッダに JSON コンテンツタイプを設定
 		w.Header().Set("Content-Type", "application/json")
 		// 追跡された Todo を JSON で応答(元のデータ構造 -> JSON 形式に変換)
 		json.NewEncoder(w).Encode(newTodo)
-		return
 	}
 }
 
 // `/todos/{id}` エンドポイントを取得
-func TodoHandler(w http.ResponseWriter, r *http.Request) {
+func TodoHandlers(w http.ResponseWriter, r *http.Request) {
 	// リクエスト URL から ID を抽出
 	idStr := strings.TrimPrefix(r.URL.Path, "/todos/")
 	// 文字列を整数に変換
@@ -69,7 +75,7 @@ func TodoHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		// ストレージ内の指定された ID の Todo を取得
-		todo, err := storageInstance.GetByID(id)
+		todo, err := handlerStorage.GetByID(id)
 		// 取得に失敗した場合、 HTTP 404 not found を返す
 		if err != nil {
 			http.Error(w, "Todo not found", http.StatusNotFound)
@@ -92,7 +98,7 @@ func TodoHandler(w http.ResponseWriter, r *http.Request) {
 		// 更新する Todo に URL から取得した ID を設定
 		updateTodo.ID = id
 		// ストレージ内の指定された ID の Todo を新しいデータで更新
-		err = storageInstance.Update(id, updateTodo)
+		err = handlerStorage.Update(id, updateTodo)
 		// 削除に失敗した場合、 HTTP 404 not found を返す
 		if err != nil {
 			http.Error(w, "Todo not found", http.StatusNotFound)
@@ -105,17 +111,15 @@ func TodoHandler(w http.ResponseWriter, r *http.Request) {
 
 	case http.MethodDelete:
 		// 指定された ID の Todo を削除
-		err := storageInstance.Delete(id)
+		err := handlerStorage.Delete(id)
 		// 削除に失敗した場合、 HTTP 404 not found を返す
 		if err != nil {
 			http.Error(w, "Todo not found", http.StatusNotFound)
 			return
 		}
-		// 成功時、 HTTP ステータスコード 204 No Content を設定（レスポンスボディなし）
 		w.WriteHeader(http.StatusNoContent)
 
 	default:
-		// サポートされていない HTTP メソッドがリクエストされた場合、 405 Method Not Allowed を返す
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
 }
