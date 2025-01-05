@@ -9,4 +9,14 @@ services:
       - "8080:8080"
     volumes:
       - ./server:/app
+  
+  sqlite-web:
+    build:
+      context: ./sqlite-web
+      dockerfile: Dockerfile
+    image: sqlite-web-image
+    container_name: sqlite-web
+    ports:
+      - "8081:8080"
+    volumes:
       - ./server/database:/app/database
