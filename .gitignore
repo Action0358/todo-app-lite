@@ -1,3 +1,4 @@
 # Ignore the tmp directory and its contents
-server/tmp
+server/bin
+server/logs
 server/database/todos.db
