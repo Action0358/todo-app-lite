@@ -5,12 +5,12 @@ import (
 	"net/http"
 
 	"github.com/Action0358/todo-app-lite/server/handlers"
-	"github.com/Action0358/todo-app-lite/server/storage"
+	"github.com/Action0358/todo-app-lite/server/sqlite"
 )
 
 func main() {
 	// SQLite ストレージの初期化
-	storageInstance, err := storage.NewSQLiteStorage("")
+	storageInstance, err := sqlite.NewSQLiteStorage("")
 	if err != nil {
 		log.Printf("Faild to initialize SQLite storage: %v", err)
 	}
