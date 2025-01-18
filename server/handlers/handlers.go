@@ -55,6 +55,11 @@ func TodosHandlers(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Failed to add todo", http.StatusInternalServerError)
 			return
 		}
+		// バリデーションチェック
+		if newTodo.Title == "" || newTodo.Description == "" {
+			http.Error(w, "Please enter your information", http.StatusBadRequest)
+			return
+		}
 		// レスポンスヘッダに JSON コンテンツタイプを設定
 		w.Header().Set("Content-Type", "application/json")
 		// ステータスコードを 201 Created に設定
@@ -113,6 +118,11 @@ func TodoHandlers(w http.ResponseWriter, r *http.Request) {
 		// 削除に失敗した場合、 HTTP 404 not found を返す
 		if err != nil {
 			http.Error(w, "Todo not found", http.StatusNotFound)
+			return
+		}
+		// バリデーションチェック
+		if updateTodo.Title == "" || updateTodo.Description == "" {
+			http.Error(w, "Please enter your information", http.StatusBadRequest)
 			return
 		}
 		// レスポンスヘッダに JSON コンテンツタイプを設定
