@@ -51,7 +51,7 @@
 
 ### インストール手順
 
-1. このリポジトリをクローンします：
+1. このリポジトリをクローンします
 ```bash
 git clone https://github.com/Action0358/todo-app-lite.git
 cd todo-app-lite
