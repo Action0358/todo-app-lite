@@ -1,9 +1,20 @@
 services:
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    image: client-image
+    container_name: client
+    ports:
+      - "3000:80"
+    volumes:
+      - ./client:/usr/share/nginx/html
+
   server:
     build: 
       context: ./server
       dockerfile: Dockerfile
-    image: todo-app-image
+    image: server-image
     container_name: server
     ports:
       - "8080:8080"
