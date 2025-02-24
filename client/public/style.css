@@ -1,14 +1,30 @@
+:root {
+    --main-color: #f4f4f9;
+    --accent-color: #005722;
+    --background-color: #f4f4f9;
+    --header-background-color: #333;
+    --main-background-color: #ffffff;
+    --border-color: #ccc;
+    --button-background-color: #007bff;
+    --button-hover-background-color: #0056b3;
+    --list-item-background-color: #fff;
+    --edit-icon-color: #47dd5b;
+    --edit-icon-hover-color: #35a542;
+    --delete-icon-color: #ff0000;
+    --delete-icon-hover-color: #a50000;
+}
+
 /* デフォルトのスタイ （デスクトップ向け）*/
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f9;
+    background-color: var(--background-color);
 }
 
 header {
-    background: #333;
-    color: #fff;
+    background: var(--header-background-color);
+    color: var(--list-item-background-color);
     padding: 1rem;
     text-align: center;
     margin-bottom: 1rem;
@@ -19,7 +35,7 @@ main {
     max-width: 600px;
     margin-right: auto;
     margin-left: auto;
-    background-color: #ffffff;
+    background-color: var(--main-background-color);
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
@@ -55,20 +71,20 @@ main {
     flex: 1;
     padding: 0.5rem;
     border-radius: 5px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border-color);
 }
 
 button {
     padding: 0.5rem 1rem;
     border-radius: 5px;
     border: none;
-    background-color: #007bff;
+    background-color: var(--button-background-color);
     color: white;
     cursor: pointer;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: var(--button-background-color-hover);
 }
 
 #todo-list {
@@ -78,13 +94,13 @@ button:hover {
 }
 
 #todo-list li {
-    background: #fff;
+    background: var(--list-item-background-color);
     margin: 0.5rem 0;
     padding: 0.5rem;
     border-radius: 5px;
     display: flex;
     align-items: center;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border-color);
     height: 4rem;
 }
 
@@ -108,19 +124,19 @@ button:hover {
 .edit-icon {
     cursor: pointer; 
     font-size: 1.5rem; 
-    color: #47dd5b; 
+    color: var(--edit-icon-color); 
 }
 
 .edit-icon:hover {
-    color: #35a542; 
+    color: var(--edit-icon-hover-color); 
 }
 
 .delete-icon {
     cursor: pointer;
     font-size: 1.5rem;
-    color: #ff0000; 
+    color: var(--delete-icon-color); 
 }
 
 .delete-icon:hover {
-    color: #cc0000; 
+    color: var(--delete-icon-hover-color); 
 }
