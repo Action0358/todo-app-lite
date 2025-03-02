@@ -28,18 +28,21 @@
 
 ### バックエンド
 **Go (Golang)**: RESTful APIを提供するサーバーを構築します。また、Goサーバーは静的コンテンツ（HTML, CSS, JS）も提供し、フロントエンドとバックエンドが単一のサーバーで完結します。
-- 使用するGoパッケージ:
-  - `net/http` - HTTPサーバーの作成。
-  - `encoding/json` - JSON形式のリクエスト/レスポンス処理。
-  - `github.com/jinzhu/gorm` - ORM（Object Relational Mapping）ライブラリを使用してSQLiteと接続。
+
+**使用するGoパッケージ**:
+- `net/http` - HTTPサーバーの作成。
+- `encoding/json` - JSON形式のリクエスト/レスポンス処理。
+- `github.com/jinzhu/gorm` - ORM（Object Relational Mapping）ライブラリを使用してSQLiteと接続。
 
 ### データベース
 **SQLite**: 軽量で高速なデータベース。タスクの情報（タイトル、状態など）を保存します。
-- **テーブル構造**
-- `todos`:
-  - `id` (INTEGER, 主キー)
-  - `title` (TEXT, タスク名)
-  - `completed` (BOOLEAN, 完了状態)
+
+**テーブル構造**
+
+`todos`:
+- `id` (INTEGER, 主キー)
+- `title` (TEXT, タスク名)
+- `completed` (BOOLEAN, 完了状態)
 
 ## セットアップ方法
 
@@ -72,5 +75,5 @@ apt-get install sqlite3
 
 4. アプリケーションへのアクセス
 ```bash
-http://localhost:8080
+http://localhost:3000/public/
 ```
