@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script type="module" src="app.js" defer></script>
 </head>
 <body>
     <header>
@@ -18,16 +19,7 @@
                 <input type="text" id="todo-input" placeholder="タイトルを入力してください" />
                 <button type="submit">追加</button>
             </form>
-            <ul id="todo-list">
-                <li>
-                    <input type="checkbox" class="todo-checkbox">
-                    <span>サンプルタイトル</span>
-                    <div>
-                        <span class="material-icons edit-icon">edit</span>
-                        <span class="material-icons delete-icon">delete</span>
-                    </div>
-                </li>
-            </ul>
+            <ul id="todo-list"></ul>
         </div>
     </main>
 </body>
