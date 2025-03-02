@@ -10,6 +10,8 @@
     --edit-icon-hover-color: #35a542;
     --delete-icon-color: #ff0000;
     --delete-icon-hover-color: #a50000;
+    --todo-text-completed: #888;
+    --todo-text-editing: #f0f0f0;
 }
 
 /* デフォルトのスタイ （デスクトップ向け）*/
@@ -58,7 +60,7 @@ main {
 @media (max-width: 600px) {
     main {
         padding: 0.5rem;
-        max-width: 100;
+        max-width: 100%;
     }
 
     #todo-form {
@@ -123,6 +125,7 @@ button:hover {
     margin-right: 0.5rem;
     white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #todo-list li div {
@@ -153,4 +156,13 @@ button:hover {
 
 .delete-icon:hover {
     color: var(--delete-icon-hover-color); 
+}
+
+.todo-text.completed {
+    text-decoration: line-through;
+    color: var(--todo-text-completed);
+}
+
+.todo-text.editing {
+    color: var(--todo-text-editing);
 }
