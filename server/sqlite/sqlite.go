@@ -75,6 +75,8 @@ func (s *SQLiteStorage) GetAll() ([]models.Todo, error) {
 	return todos, nil
 }
 
+// 注: 現在のフロントエンド実装では使用されていない機能です。将来の拡張のために保持。
+/*
 // ID を指定して Todo を取得
 func (s *SQLiteStorage) GetByID(id int) (models.Todo, error) {
 	// 指定した ID のレコードを取得するクエリ
@@ -96,6 +98,7 @@ func (s *SQLiteStorage) GetByID(id int) (models.Todo, error) {
 	// 正常な場合、todo と nil を返す
 	return todo, nil
 }
+*/
 
 // データベースに新たな Todo を追加
 func (s *SQLiteStorage) Create(todo models.Todo) (models.Todo, error) {
