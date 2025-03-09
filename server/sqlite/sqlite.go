@@ -98,24 +98,25 @@ func (s *SQLiteStorage) GetByID(id int) (models.Todo, error) {
 }
 
 // データベースに新たな Todo を追加
-func (s *SQLiteStorage) Add(todo models.Todo) (int64, error) {
+func (s *SQLiteStorage) Create(todo models.Todo) (models.Todo, error) {
 	// todos テーブルに title, description, completed を挿入するクエリを実行
 	query := "INSERT INTO todos (title, description, completed) VALUES (?, ?, ?)"
 	// クエリを実行して Todo を追加
 	result, err := s.DB.Exec(query, todo.Title, todo.Description, todo.Completed)
 	if err != nil {
 		// データ挿入中にエラーが発生した場合、 0 とエラーメッセージを返す
-		return 0, fmt.Errorf("failed to insert todo: %v", err)
+		return models.Todo{}, fmt.Errorf("failed to insert todo: %v", err)
 	}
 
 	// LastInsertId()で挿入されたレコードの ID を取得
 	id, err := result.LastInsertId()
 	if err != nil {
 		// データ取得中にエラーが発生した場合、 0 とエラーメッセージを返す
-		return 0, fmt.Errorf("failed to get last insert id: %v", err)
+		return models.Todo{}, fmt.Errorf("failed to get last insert id: %v", err)
 	}
-	// 正常の場合、id と nil を呼び出し元に返す
-	return id, nil
+	// 正常の場合、todo と nil を呼び出し元に返す
+	todo.ID = int(id)
+	return todo, nil
 }
 
 // 指定された ID の Todo を更新する
