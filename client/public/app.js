@@ -184,13 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     this.todos = this.todos.filter(t => t.id !== id);
                 }
-                
                 this.renderTodos();
-                
-                // 全てのTodoが削除された場合、明示的に空の状態を表示
-                if (this.todos.length === 0) {
-                    this.elements.list.innerHTML = '<li class="empty-state">タスクがありません。新しいタスクを追加してください。</li>';
-                }
             } catch (error) {
                 // エラー時に最新のTodoを再取得
                 this.fetchTodos();
@@ -215,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Todoがない場合の表示
             if (this.todos.length === 0) {
-                this.elements.list.innerHTML = '<li class="empty-state">タスクがありません。新しいタスクを追加してください。</li>';
+                this.elements.list.innerHTML = '<li class="empty-state">タスクがありません。</li>';
                 return;
             }
             
