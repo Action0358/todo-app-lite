@@ -80,6 +80,8 @@ func TodoHandlers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	switch r.Method {
+	// 注: GET メソッドは現在のフロントエンド実装では使用されていない機能です。将来の拡張のために保持。
+    /*
 	case http.MethodGet:
 		// ストレージ内の指定された ID の Todo を取得
 		todo, err := handlerStorage.GetByID(id)
@@ -89,6 +91,7 @@ func TodoHandlers(w http.ResponseWriter, r *http.Request) {
 		}
 		// 取得された Todo を JSON 形式でエンコードし、レスポンスとして送信（元のデータ構造 -> JSON 形式に変換）
 		json.NewEncoder(w).Encode(todo)
+	*/
 
 	case http.MethodPut:
 		// 指定された ID の Todo を更新
