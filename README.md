@@ -42,6 +42,7 @@
 `todos`:
 - `id` (INTEGER, 主キー)
 - `title` (TEXT, タスク名)
+- `discription` (TEXT, タスク詳細)
 - `completed` (BOOLEAN, 完了状態)
 
 ## セットアップ方法
