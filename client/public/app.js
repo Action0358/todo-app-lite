@@ -96,8 +96,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
             // フロントエンドの状態を更新
             const updatedTodo = { ...todo, completed: !todo.completed };
-        
-            // `map()` だけで更新
             this.todos = this.todos.map(t => t.id === id ? updatedTodo : t);
             this.renderTodos();
         
