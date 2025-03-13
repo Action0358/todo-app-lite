@@ -90,29 +90,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.handleError('Todosが正しく初期化されていません');
                 return;
             }
-            
+        
             const todo = this.todos.find(t => t.id === id);
             if (!todo) return;
-
+        
             // フロントエンドの状態を更新
             const updatedTodo = { ...todo, completed: !todo.completed };
+        
+            // `map()` だけで更新
             this.todos = this.todos.map(t => t.id === id ? updatedTodo : t);
             this.renderTodos();
-
+        
             try {
                 const response = await fetch(`${this.config.API_BASE_URL}/todos/${id}`, {
                     method: 'PUT',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(updatedTodo)  
+                    body: JSON.stringify(updatedTodo)
                 });
                 if (!response.ok) throw new Error('Todoの更新に失敗');
-
+        
                 const result = await response.json();
-                const index = this.todos.findIndex(t => t.id === id);
-                if (index !== -1) {
-                    this.todos[index] = result;
-                    this.renderTodos();
-                }
+        
+                this.todos = this.todos.map(t => t.id === id ? result : t);
+                this.renderTodos();
+        
             } catch (error) {
                 // エラー時に最新のTodoを再取得
                 this.fetchTodos();
