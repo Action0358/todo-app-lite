@@ -87,12 +87,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const todo = this.todos.find(t => t.id === id);
+            const todo = this.todos.find(todo => todo.id === id);
             if (!todo) return;
 
             // フロントエンドの状態を更新
             const updatedTodo = { ...todo, completed: !todo.completed };
-            this.todos = this.todos.map(t => t.id === id ? updatedTodo : t);
+            this.todos = this.todos.map(todo => todo.id === id ? updatedTodo : todo);
             this.renderTodos();
 
             try {
@@ -104,10 +104,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!response.ok) throw new Error('Todoの更新に失敗');
 
                 const result = await response.json();
-                this.todos = this.todos.map(t => t.id === id ? result : t);
+                // サーバーのレスポンスを反映
+                this.todos = this.todos.map(todo => todo.id === id ? result : todo);
                 this.renderTodos();
             } catch (error) {
-                this.fetchTodos(); // エラー時に最新のTodoを再取得
+                // エラー時に最新のTodoを再取得
+                this.fetchTodos(); 
                 this.handleError('Todoの更新中にエラーが発生しました', error);
             }
         },
@@ -127,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const newText = prompt('Todoを編集', todo.title);
             if (newText === null || newText.trim() === "") {
-                return; // 空のテキストまたはキャンセルの場合は何もしない
+                return;
             }
 
             this.todos = this.todos.map(todo => 
@@ -147,10 +149,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!response.ok) throw new Error('Todoの更新に失敗');
 
                 const updatedTodo = await response.json();
-                this.todos = this.todos.map(t => t.id === id ? updatedTodo : t);
+                this.todos = this.todos.map(todo => todo.id === id ? updatedTodo : todo);
                 this.renderTodos();
             } catch (error) {
-                this.fetchTodos(); // エラー時に最新のTodoを再取得
+                // エラー時に最新のTodoを再取得
+                this.fetchTodos(); 
                 this.handleError('Todoの編集中にエラーが発生しました', error);
             }
         },
@@ -166,11 +169,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!Array.isArray(this.todos)) {
                     this.todos = [];
                 } else {
-                    this.todos = this.todos.filter(t => t.id !== id);
+                    this.todos = this.todos.filter(todo => todo.id !== id);
                 }
                 this.renderTodos();
             } catch (error) {
-                this.fetchTodos(); // エラー時に最新のTodoを再取得
+                // エラー時に最新のTodoを再取得
+                this.fetchTodos(); 
                 this.handleError('Todoの削除中にエラーが発生しました', error);
             }
         },
@@ -185,8 +189,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!Array.isArray(this.todos)) {
                 this.todos = [];
             }
-            
-            this.elements.list.innerHTML = ''; // リストをクリア
+            // リストをクリア
+            this.elements.list.innerHTML = ''; 
             
             if (this.todos.length === 0) {
                 this.elements.list.innerHTML = '<li class="empty-state">タスクがありません。</li>';
@@ -225,10 +229,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // エラー処理の統一
         handleError(message, error = null) {
             console.error(message, error);
-            // ここにユーザーへのエラー表示ロジックを追加することも可能
         }
     };
-
     // アプリを初期化
     todoApp.init();
 });
