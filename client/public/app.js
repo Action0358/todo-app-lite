@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('必要なDOM要素が見つかりません');
                 return;
             }
-            
+
             this.bindEvents();
             this.fetchTodos();
         },
@@ -41,11 +41,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     method: 'GET'
                 });
                 if (!response.ok) throw new Error('Todoの取得に失敗');
-                
+
                 const data = await response.json();
                 // レスポンスが配列であることを確認
                 this.todos = Array.isArray(data) ? data : [];
-                
                 this.renderTodos();
             } catch (error) {
                 // エラー時に空の配列を設定してからレンダリング
@@ -60,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const response = await fetch(`${this.config.API_BASE_URL}/todos`, {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         title: text,
                         description: 'No description',
@@ -68,14 +67,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     })
                 });
                 if (!response.ok) throw new Error('Todoの追加に失敗');
-                
+
                 const newTodo = await response.json();
-                
                 // todosが未定義または配列でない場合、初期化
                 if (!Array.isArray(this.todos)) {
                     this.todos = [];
                 }
-                
                 this.todos.push(newTodo);
                 this.renderTodos();
             } catch (error) {
@@ -85,48 +82,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Todoの更新(トグル)
         async toggleTodo(id) {
-            // todosが未定義または配列でない場合、何もしない
             if (!Array.isArray(this.todos)) {
                 this.handleError('Todosが正しく初期化されていません');
                 return;
             }
-        
+
             const todo = this.todos.find(t => t.id === id);
             if (!todo) return;
-        
+
             // フロントエンドの状態を更新
             const updatedTodo = { ...todo, completed: !todo.completed };
             this.todos = this.todos.map(t => t.id === id ? updatedTodo : t);
             this.renderTodos();
-        
+
             try {
                 const response = await fetch(`${this.config.API_BASE_URL}/todos/${id}`, {
                     method: 'PUT',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(updatedTodo)
                 });
                 if (!response.ok) throw new Error('Todoの更新に失敗');
-        
+
                 const result = await response.json();
-        
                 this.todos = this.todos.map(t => t.id === id ? result : t);
                 this.renderTodos();
-        
             } catch (error) {
-                // エラー時に最新のTodoを再取得
-                this.fetchTodos();
+                this.fetchTodos(); // エラー時に最新のTodoを再取得
                 this.handleError('Todoの更新中にエラーが発生しました', error);
             }
         },
 
         // Todoの編集
         async editTodo(id) {
-            // todosが未定義または配列でない場合、何もしない
             if (!Array.isArray(this.todos)) {
                 this.handleError('Todosが正しく初期化されていません');
                 return;
             }
-            
+
             const todo = this.todos.find(todo => todo.id === id);
             if (!todo) {
                 this.handleError('指定されたTodoが見つかりません');
@@ -138,17 +130,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 return; // 空のテキストまたはキャンセルの場合は何もしない
             }
 
-            // フロントエンドの状態を更新
             this.todos = this.todos.map(todo => 
                 todo.id === id ? { ...todo, title: newText } : todo
             );
             this.renderTodos();
 
-            // サーバーに更新を送信
             try {
                 const response = await fetch(`${this.config.API_BASE_URL}/todos/${id}`, {
                     method: 'PUT',
-                    headers: {'Content-Type': 'application/json'},
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         ...todo,
                         title: newText 
@@ -157,14 +147,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!response.ok) throw new Error('Todoの更新に失敗');
 
                 const updatedTodo = await response.json();
-                const index = this.todos.findIndex(t => t.id === id);
-                if (index !== -1) {
-                    this.todos[index] = updatedTodo; // サーバーからの更新を反映
-                    this.renderTodos();
-                }
+                this.todos = this.todos.map(t => t.id === id ? updatedTodo : t);
+                this.renderTodos();
             } catch (error) {
-                // エラー時に最新のTodoを再取得
-                this.fetchTodos();
+                this.fetchTodos(); // エラー時に最新のTodoを再取得
                 this.handleError('Todoの編集中にエラーが発生しました', error);
             }
         },
@@ -176,8 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     method: 'DELETE'
                 });
                 if (!response.ok) throw new Error('Todoの削除に失敗');
-                
-                // todosが未定義または配列でない場合、初期化
+
                 if (!Array.isArray(this.todos)) {
                     this.todos = [];
                 } else {
@@ -185,28 +170,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 this.renderTodos();
             } catch (error) {
-                // エラー時に最新のTodoを再取得
-                this.fetchTodos();
+                this.fetchTodos(); // エラー時に最新のTodoを再取得
                 this.handleError('Todoの削除中にエラーが発生しました', error);
             }
         },
 
         // Todoリストをレンダリングする関数
         renderTodos() {
-            // list要素が存在するか確認
             if (!this.elements.list) {
                 console.error('Todo list要素が見つかりません');
                 return;
             }
             
-            // todosが未定義または配列でない場合、初期化
             if (!Array.isArray(this.todos)) {
                 this.todos = [];
             }
             
             this.elements.list.innerHTML = ''; // リストをクリア
             
-            // Todoがない場合の表示
             if (this.todos.length === 0) {
                 this.elements.list.innerHTML = '<li class="empty-state">タスクがありません。</li>';
                 return;
@@ -231,15 +212,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Todoアイテムにイベントリスナーを追加
         addTodoItemListeners(li, todoId) {
-            // チェックボックスのイベントリスナー
             const checkbox = li.querySelector('.todo-checkbox');
             checkbox.addEventListener('change', () => this.toggleTodo(todoId));
 
-            // 編集アイコンのイベントリスナー
             const editIcon = li.querySelector('.edit-icon');
             editIcon.addEventListener('click', () => this.editTodo(todoId));
 
-            // 削除アイコンのイベントリスナー
             const deleteIcon = li.querySelector('.delete-icon');
             deleteIcon.addEventListener('click', () => this.deleteTodo(todoId));
         },
