@@ -34,6 +34,66 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         },
 
+        // モーダルを表示するための関数
+        showModal(id) {
+            const modal = document.getElementById("modal");
+            const descriptionInput = document.getElementById("description");
+
+            // 選択されたTodoを探す
+            const selectedTodo = this.todos.find(todo => todo.id === id);
+            if (selectedTodo.description === 'null') {
+                // nullの場合は空文字列を表示
+                descriptionInput.value = '';
+            } else {
+                // 既存の説明をモーダル内に表示
+                descriptionInput.value = selectedTodo.description;
+            }
+
+            // モーダルを表示
+            modal.style.display = "block";
+
+            // モーダルを閉じる関数
+            const closeModal = () => {
+                modal.style.display = "none";
+            }
+
+            // 保存ボタンのイベントリスナー
+            document.getElementById("saveDescription").onclick = () => {
+                const description = descriptionInput.value.trim();
+                if (description) {
+                    // Todoアイテムに概要を追加する処理
+                    this.saveDescription(id, description);
+                    // アロー関数を定数に代入すると、通常の関数と同じように `関数名();` で呼び出せる
+                    closeModal();
+                } else {
+                    alert("概要を入力してください");
+                }
+            };
+
+            // モーダルを閉じるためのイベントリスナー
+            document.getElementsByClassName("close")[0].onclick = closeModal;
+        },
+
+        async saveDescription(id, description) {
+            try {
+                const todo = this.todos.find(todo => todo.id === id);
+                if (!todo) throw new Error('Todoが見つかりません');
+                
+                const updatedTodo = { ...todo, description };
+                const response = await fetch(`${this.config.API_BASE_URL}/todos/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedTodo)
+                });
+                if (!response.ok) throw new Error('概要保存に失敗しました');
+                
+                this.todos = this.todos.map(todo => todo.id === id ? updatedTodo : todo);
+                this.renderTodos();
+            } catch (error) {
+                this.handleError(error);
+            }
+        },
+
         // Todoの取得
         async fetchTodos() {
             try {
@@ -50,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // エラー時に空の配列を設定してからレンダリング
                 this.todos = [];
                 this.renderTodos();
-                this.handleError('Todoの取得中にエラーが発生しました', error);
+                this.handleError(error);
             }
         },
 
@@ -62,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         title: text,
-                        description: 'No description',
+                        description: 'null',
                         completed: false
                     })
                 });
@@ -76,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.todos.push(newTodo);
                 this.renderTodos();
             } catch (error) {
-                this.handleError('Todoの追加中にエラーが発生しました', error);
+                this.handleError(error);
             }
         },
 
@@ -110,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 // エラー時に最新のTodoを再取得
                 this.fetchTodos(); 
-                this.handleError('Todoの更新中にエラーが発生しました', error);
+                this.handleError(error);
             }
         },
 
@@ -141,10 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const response = await fetch(`${this.config.API_BASE_URL}/todos/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        ...todo,
-                        title: newText 
-                    })
+                    body: JSON.stringify({ ...todo, title: newText })
                 });
                 if (!response.ok) throw new Error('Todoの更新に失敗');
 
@@ -154,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 // エラー時に最新のTodoを再取得
                 this.fetchTodos(); 
-                this.handleError('Todoの編集中にエラーが発生しました', error);
+                this.handleError(error);
             }
         },
 
@@ -175,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 // エラー時に最新のTodoを再取得
                 this.fetchTodos(); 
-                this.handleError('Todoの削除中にエラーが発生しました', error);
+                this.handleError(error);
             }
         },
 
@@ -224,6 +281,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const deleteIcon = li.querySelector('.delete-icon');
             deleteIcon.addEventListener('click', () => this.deleteTodo(todoId));
+
+            const todoText = li.querySelector('.todo-text');
+            todoText.addEventListener("click", () => this.showModal(todoId));
         },
 
         // エラー処理の統一
