@@ -14,7 +14,7 @@ RUN go mod tidy
 RUN go install github.com/air-verse/air@latest
 
 # ソースコードをコピー（serverディレクトリ内のファイルをコンテナの/appにコピー）
-COPY server/ .
+COPY . .
 
 # Airを実行するコマンドを設定
 CMD ["air"]

@@ -5,18 +5,39 @@ import (
 	"net/http"
 
 	"github.com/Action0358/todo-app-lite/server/handlers"
+	"github.com/Action0358/todo-app-lite/server/sqlite"
+	"github.com/rs/cors"
 )
 
 func main() {
-	// Restfulなルーティング設定
-	http.HandleFunc("/todos", handlers.TodosHandler)  // 一覧取得、新規作成
-	http.HandleFunc("/todos/", handlers.TodoHandler) // 特定のタスクの操作
+	// SQLite ストレージの初期化
+	storageInstance, err := sqlite.NewSQLiteStorage("")
+	if err != nil {
+		log.Fatalf("Faild to initialize SQLite storage: %v", err)
+	}
+	// 関数終了時に必ずクローズ
+	defer storageInstance.DB.Close()
+
+	// ハンドラーにストレージを渡す
+	handlers.SetStorage(storageInstance)
+
+	// CORS 設定（クロスオリジン対応）
+	corsHandler := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Content-Type", "Authorization"},
+		AllowCredentials: true,
+	})
+
+	// 高度なルーティング
+	mux := http.NewServeMux()
+	mux.HandleFunc("/todos", handlers.TodosHandlers)
+	mux.HandleFunc("/todos/", handlers.TodoHandlers)
+
+	// CORS ミドルウェアでラップしたハンドラー
+	handler := corsHandler.Handler(mux)
 
 	// サーバー起動
-	err := http.ListenAndServe(":8080", nil)
-	if err != nil {
-		log.Println("Error starting server", err)
-		// エラー発生時に main 関数の処理を終了させる
-		return
-	}
+	log.Println("Server started on :8080")
+	log.Fatal(http.ListenAndServe(":8080", handler))
 }
