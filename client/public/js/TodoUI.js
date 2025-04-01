@@ -30,37 +30,26 @@ class TodoUI {
             `;
 
             // イベントリスナーの設定
-            this.addTodoItemListeners(li, todo.id, handlers);
+            this.addTodoItemListeners(li, todo.id, todo.title, handlers);
             this.elements.list.appendChild(li);
         });
     }
 
-    // Todoアイテムにイベントリスナーを追加
-    addTodoItemListeners(li, todoId, handlers) {
-        const checkbox = li.querySelector('.todo-checkbox');
-        checkbox.addEventListener('change', () => handlers.onToggle(todoId));
-
-        const editIcon = li.querySelector('.edit-icon');
-        editIcon.addEventListener('click', () => handlers.onEdit(todoId));
-
-        const deleteIcon = li.querySelector('.delete-icon');
-        deleteIcon.addEventListener('click', () => handlers.onDelete(todoId));
-
-        const todoText = li.querySelector('.todo-text');
-        todoText.addEventListener("click", () => handlers.onShowModal(todoId));
-    }
-
+    // モーダルを表示
     showModal(todo, handlers) {
         const modal = document.getElementById('modal');
         const descriptionInput = document.getElementById('description');
 
         descriptionInput.value = todo.description === 'null' ? '' : todo.description;
+
+         // モーダルを表示
         modal.style.display = "block";
 
         const closeModal = () => {
             modal.style.display = "none";
         };
 
+        // 保存ボタンのイベント設定
         document.getElementById('saveDescription').onclick = () => {
             const description = descriptionInput.value.trim();
             if (description) {
@@ -71,6 +60,60 @@ class TodoUI {
             }
         };
 
-        document.getElementsByClassName('close')[0].onclick = closeModal;
-    }      
+        // モーダルの背景をクリックしたときに閉じる処理を追加
+        modal.onclick = (event) => {
+            // モーダルの背景部分（モーダル自体）がクリックされた場合のみ閉じる
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+    }
+    
+    // 削除確認ポップアップを表示
+    showDeleteConfirmation(todoId, todoTitle, handlers) {
+        const modal = document.getElementById('delete-confirmation-modal');
+        
+        // メッセージを設定
+        document.getElementById('delete-confirmation-message').textContent = 
+            `「${todoTitle}」を削除してもよろしいですか？`;
+        
+        // モーダルを表示
+        modal.style.display = "block";
+        
+        // 確認ボタンのイベント設定（シンプル化）
+        document.getElementById('delete-confirm-button').onclick = () => {
+            modal.style.display = "none";
+            handlers.onDelete(todoId);
+        };
+        
+        // キャンセルボタンのイベント設定（シンプル化）
+        document.getElementById('delete-cancel-button').onclick = () => {
+            modal.style.display = "none";
+        };
+        
+        // モーダル自体をクリックしたときに閉じる処理（シンプル化）
+        modal.onclick = (event) => {
+            // モーダルの背景部分がクリックされた場合のみ閉じる
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        };
+    }
+
+    // Todoアイテムにイベントリスナーを追加
+    addTodoItemListeners(li, todoId, todoTitle, handlers) {
+        const checkbox = li.querySelector('.todo-checkbox');
+        checkbox.addEventListener('change', () => handlers.onToggle(todoId));
+
+        const editIcon = li.querySelector('.edit-icon');
+        editIcon.addEventListener('click', () => handlers.onEdit(todoId));
+
+        const deleteIcon = li.querySelector('.delete-icon');
+        deleteIcon.addEventListener('click', () => {
+            this.showDeleteConfirmation(todoId, todoTitle, handlers);
+        });
+
+        const todoText = li.querySelector('.todo-text');
+        todoText.addEventListener("click", () => handlers.onShowModal(todoId));
+    }
 }

@@ -80,13 +80,21 @@ class TodoApp {
             return;
         }
 
-        const updatedTodo = { ...todo, completed: !todo.completed };
         try {
-            const result = await this.api.updateTodo(id, updatedTodo);
-            this.todos = this.todos.map(t => t.id === id ? result : t);
+            // 完了状態になった場合は削除する
+            if (!todo.completed) {
+                // まず完了状態に更新
+                const updatedTodo = { ...todo, completed: true };
+                await this.api.updateTodo(id, updatedTodo);
+                
+                // 次に削除
+                await this.api.deleteTodo(id);
+                // 削除したTodoを除外した新しい配列を作成
+                this.todos = this.todos.filter(todo => todo.id !== id);
+            }
             this.renderTodos();
         } catch (error) {
-            this.fetchTodos(); // エラー時に最新のTodoを再取得
+            this.fetchTodos();
             this.handleError(error);
         }
     }
@@ -103,7 +111,7 @@ class TodoApp {
         if (newText === null || newText.trim() === "") return;
         try {
             const updatedTodo = await this.api.updateTodo(id, { ...todo, title: newText });
-            this.todos = this.todos.map(t => t.id === id ? updatedTodo : t);
+            this.todos = this.todos.map(todo => todo.id === id ? updatedTodo : todo);
             this.renderTodos();
         } catch (error) {
             this.fetchTodos(); // エラー時に最新のTodoを再取得
@@ -138,7 +146,7 @@ class TodoApp {
             
             const updatedTodo = { ...todo, description };
             const result = await this.api.updateTodo(id, updatedTodo);
-            this.todos = this.todos.map(t => t.id === id ? result : t);
+            this.todos = this.todos.map(todo => todo.id === id ? result : todo);
             this.renderTodos();
         } catch (error) {
             this.fetchTodos(); // エラー時に最新のTodoを再取得
