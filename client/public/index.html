@@ -24,14 +24,25 @@
             </form>
             <ul id="todo-list"></ul>
         </div>
+         <!-- 既存のモーダル（Todoの概要） -->
         <div id="modal" class="modal">
             <div class="modal-content">
-                <span class="close">&times;</span>
                 <h2>Todoの概要</h2>
                 <textarea id="description" placeholder="概要を入力してください"></textarea>
                 <button id="saveDescription">保存</button>
             </div>
         </div> 
+         <!-- 削除確認モーダルを追加 -->
+        <div id="delete-confirmation-modal" class="modal">
+            <div class="modal-content">
+                <h2>削除の確認</h2>
+                <p id="delete-confirmation-message">このタスクを削除してもよろしいですか？</p>
+                <div class="button-container">
+                    <button id="delete-confirm-button" class="delete-button">削除</button>
+                    <button id="delete-cancel-button" class="cancel-button">キャンセル</button>
+                </div>
+            </div>
+        </div>
     </main>
 </body>
 </html>
