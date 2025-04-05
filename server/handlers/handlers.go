@@ -64,7 +64,7 @@ func TodosHandlers(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// `/todos/{id}` エンドポイントを取得
+// `/todos/{id}` エンドポイントを処理
 func TodoHandlers(w http.ResponseWriter, r *http.Request) {
 	// レスポンスヘッダに JSON コンテンツタイプを設定
 	w.Header().Set("Content-Type", "application/json")
