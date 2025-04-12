@@ -39,18 +39,21 @@ class TodoUI {
     showModal(todo, handlers) {
         const modal = document.getElementById('modal');
         const descriptionInput = document.getElementById('description');
+        const saveButton = document.getElementById('saveDescription');
+        const closeButton = document.getElementById('save-cancel-button')
 
         descriptionInput.value = todo.description === 'null' ? '' : todo.description;
 
-         // モーダルを表示
+         // モーダルウィンドウを表示
         modal.style.display = "block";
 
+         // モーダルウィンドウを非表示
         const closeModal = () => {
             modal.style.display = "none";
         };
 
         // 保存ボタンのイベント設定
-        document.getElementById('saveDescription').onclick = () => {
+        saveButton.onclick = () => {
             const description = descriptionInput.value.trim();
             if (description) {
                 handlers.onSaveDescription(todo.id, description);
@@ -60,34 +63,40 @@ class TodoUI {
             }
         };
 
-        // モーダルの背景をクリックしたときに閉じる処理を追加
-        modal.onclick = (event) => {
+        // クリックしたときに閉じる処理
+        const handleCloseClick = (event) => {
             // モーダルの背景部分（モーダル自体）がクリックされた場合のみ閉じる
-            if (event.target === modal) {
+            if (event.target === modal || event.target === closeButton) {
                 closeModal();
             }
         };
+        // 共通のクリックイベント登録
+        modal.onclick = handleCloseClick;
+        closeButton.onclick = handleCloseClick;
     }
     
     // 削除確認ポップアップを表示
     showDeleteConfirmation(todoId, todoTitle, handlers) {
         const modal = document.getElementById('delete-confirmation-modal');
+        const modalMassage = document.getElementById('delete-confirmation-message');
+        const deleteButton = document.getElementById('delete-confirm-button');
+        const cancelButton = document.getElementById('delete-cancel-button');
         
         // メッセージを設定
-        document.getElementById('delete-confirmation-message').textContent = 
+        modalMassage.textContent = 
             `「${todoTitle}」を削除してもよろしいですか？`;
         
         // モーダルを表示
         modal.style.display = "block";
         
         // 確認ボタンのイベント設定（シンプル化）
-        document.getElementById('delete-confirm-button').onclick = () => {
+        deleteButton.onclick = () => {
             modal.style.display = "none";
             handlers.onDelete(todoId);
         };
         
         // キャンセルボタンのイベント設定（シンプル化）
-        document.getElementById('delete-cancel-button').onclick = () => {
+        cancelButton.onclick = () => {
             modal.style.display = "none";
         };
         
