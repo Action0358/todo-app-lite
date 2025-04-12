@@ -83,10 +83,8 @@ class TodoApp {
         try {
             // 完了状態を反転する
             const updatedTodo = { ...todo, completed: true };
-        
             // データベースでは完了状態を更新するだけ（削除しない）
             await this.api.updateTodo(id, updatedTodo);
-            
             // フロント側では完了状態のTodoをリストから除外する
             this.todos = this.todos.filter(todo => todo.id !== id);
         
