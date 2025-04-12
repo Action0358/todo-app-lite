@@ -47,7 +47,7 @@ class TodoApp {
         try {
             const data = await this.api.fetchTodos();
             // レスポンスが配列であることを確認
-            this.todos = Array.isArray(data) ? data : [];
+            this.todos = Array.isArray(data) ? data.filter(todo => !todo.completed) : [];
             this.renderTodos();
         } catch (error) {
             // エラー時に空の配列を設定してからレンダリング
@@ -81,17 +81,13 @@ class TodoApp {
         }
 
         try {
-            // 完了状態になった場合は削除する
-            if (!todo.completed) {
-                // まず完了状態に更新
-                const updatedTodo = { ...todo, completed: true };
-                await this.api.updateTodo(id, updatedTodo);
-                
-                // 次に削除
-                await this.api.deleteTodo(id);
-                // 削除したTodoを除外した新しい配列を作成
-                this.todos = this.todos.filter(todo => todo.id !== id);
-            }
+            // 完了状態を反転する
+            const updatedTodo = { ...todo, completed: true };
+            // データベースでは完了状態を更新するだけ（削除しない）
+            await this.api.updateTodo(id, updatedTodo);
+            // フロント側では完了状態のTodoをリストから除外する
+            this.todos = this.todos.filter(todo => todo.id !== id);
+        
             this.renderTodos();
         } catch (error) {
             this.fetchTodos();

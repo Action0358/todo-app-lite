@@ -17,6 +17,7 @@
         <h1>Todo List</h1>
     </header>
     <main>
+         <!-- コンテンツ表示 -->
         <div class="content-wrapper">
             <form id="todo-form">
                 <input type="text" id="todo-input" placeholder="タイトルを入力してください" />
@@ -29,7 +30,10 @@
             <div class="modal-content">
                 <h2>Todoの概要</h2>
                 <textarea id="description" placeholder="概要を入力してください"></textarea>
-                <button id="saveDescription">保存</button>
+                <div class="button-container">
+                    <button id="saveDescription" class="modal-button">保存</button>
+                    <button id="save-cancel-button" class="cancel-button">キャンセル</button>
+                </div>
             </div>
         </div> 
          <!-- 削除確認モーダルを追加 -->
