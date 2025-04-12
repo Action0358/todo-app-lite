@@ -12,8 +12,6 @@
     --delete-icon-hover-color: #a50000;
     --todo-text-completed: #888;
     --todo-text-editing: #f0f0f0;
-    --delete-button-background-color: #f44336;
-    --delete-button-hover-background-color: #d32f2f;
 }
 
 /* デフォルトのスタイル （デスクトップ向け）*/
@@ -212,10 +210,13 @@ button:hover {
     resize: vertical;
 }
 
-#saveDescription {
-    margin-top: 10px;
-    display: block;
-    margin-left: auto;
+.modal-button {
+    background-color: var(--button-background-color);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
 }
 
 /* 削除確認モーダルのスタイル */
@@ -235,7 +236,7 @@ button:hover {
 }
 
 .delete-button {
-    background-color: var(--delete-button-background-color);
+    background-color: var(--button-background-color);
     color: white;
     border: none;
     padding: 8px 16px;
@@ -244,5 +245,5 @@ button:hover {
 }
 
 .delete-button:hover {
-    background-color: var(--delete-button-hover-background-color);
+    background-color: var(--button-hover-background-color);
 }
