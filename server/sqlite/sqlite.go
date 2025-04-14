@@ -12,16 +12,16 @@ type SQLiteStorage struct {
 	DB *sql.DB
 }
 
-// SQLite ストレージを初期化
+// SQLiteストレージを初期化
 func NewSQLiteStorage(dbPath string) (*SQLiteStorage, error) {
 	// データベースファイルのパスを指定
 	if dbPath == "" {
 		dbPath = "/app/database/todos.db"
 	}
-	// SQLite データベースに接続
+	// SQLiteデータベースに接続
 	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
-		// 接続に失敗した場合は nil とエラーメッセージを返す
+		// 接続に失敗した場合はnilとエラーメッセージを返す
 		return nil, fmt.Errorf("failed to connect to database: %v", err)
 	}
 
@@ -31,26 +31,27 @@ func NewSQLiteStorage(dbPath string) (*SQLiteStorage, error) {
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		title TEXT NOT NULL,
 		description TEXT NOT NULL,
-		completed BOOLEAN NOT NULL
+		completed BOOLEAN NOT NULL DEFAULT 0,
+		deleted BOOLEAN NOT NULL DEFAULT 0
 	);`
 	// クエリを実行してテーブルを作成
 	_, err = db.Exec(query)
 	if err != nil {
-		// クエリ実行に失敗した場合は nil とエラーメッセージを返す
+		// クエリ実行に失敗した場合はnilとエラーメッセージを返す
 		return nil, fmt.Errorf("failed to create table: %v", err)
 	}
-	// 初期化した SQLiteStorage を返す
+	// 初期化したSQLiteStorageを返す
 	return &SQLiteStorage{DB: db}, nil
 }
 
-// データベースのすべての Todo を取得
+// データベースのすべてのTodoを取得
 func (s *SQLiteStorage) GetAll() ([]models.Todo, error) {
-	// todos テーブルから id, title, completed を全件取得するクエリを実行
-	query := "SELECT id, title, description, completed FROM todos"
-	// クエリを実行して全ての Todo を取得
+	// todosテーブルから削除されていないアイテムのみを全件取得するクエリを実行
+	query := "SELECT id, title, description, completed, deleted FROM todos WHERE deleted = 0"
+	// クエリを実行して全てのTodoを取得
 	rows, err := s.DB.Query(query)
 	if err != nil {
-		// クエリ実行時にエラーが発生した場合、nil とエラーメッセージを返す
+		// クエリ実行時にエラーが発生した場合、nilとエラーメッセージを返す
 		return nil, fmt.Errorf("failed to fetch todos: %v", err)
 	}
 	// 処理が終了またはエラー時にリソース解放を行う
@@ -63,12 +64,12 @@ func (s *SQLiteStorage) GetAll() ([]models.Todo, error) {
 		// 現在のレコードを格納するための一時的な変数を定義
 		var todo models.Todo
 		// 現在の行のデータを構造体フィールドにマッピング
-		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Completed)
+		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Completed, &todo.Deleted)
 		if err != nil {
-			// データ取得中にエラーが発生した場合、nil とエラーメッセージを返す
+			// データ取得中にエラーが発生した場合、nilとエラーメッセージを返す
 			return nil, fmt.Errorf("failed to scan row: %v", err)
 		}
-		// スライス todos に現在のレコードのデータを末尾に追加
+		// スライスtodosに現在のレコードのデータを末尾に追加
 		todos = append(todos, todo)
 	}
 	// 正常の場合、すべてのレコードを格納したスライスを呼び出し元に返す
@@ -80,13 +81,13 @@ func (s *SQLiteStorage) GetAll() ([]models.Todo, error) {
 // ID を指定して Todo を取得
 func (s *SQLiteStorage) GetByID(id int) (models.Todo, error) {
 	// 指定した ID のレコードを取得するクエリ
-	query := "SELECT id, title, description, completed FROM todos WHERE id = ?"
+	query := "SELECT id, title, description, completed, deleted FROM todos WHERE id = ?"
 	// クエリを実行して指定した Todo を取得
 	row := s.DB.QueryRow(query, id)
 
 	var todo models.Todo
 	// クエリ結果を Todo 構造体にスキャン
-	err := row.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Completed)
+	err := row.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Completed, &todo.Deleted)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			// 指定した ID が見つからない場合
@@ -100,34 +101,34 @@ func (s *SQLiteStorage) GetByID(id int) (models.Todo, error) {
 }
 */
 
-// データベースに新たな Todo を追加
+// データベースに新たなTodoを追加
 func (s *SQLiteStorage) Create(todo models.Todo) (models.Todo, error) {
-	// todos テーブルに title, description, completed を挿入するクエリを実行
-	query := "INSERT INTO todos (title, description, completed) VALUES (?, ?, ?)"
-	// クエリを実行して Todo を追加
-	result, err := s.DB.Exec(query, todo.Title, todo.Description, todo.Completed)
+	// todosテーブルに title, description, completedを挿入するクエリを実行
+	query := "INSERT INTO todos (title, description, completed, deleted) VALUES (?, ?, ?, ?)"
+	// クエリを実行してTodoを追加(削除フラグは常に0(false)で初期化)
+	result, err := s.DB.Exec(query, todo.Title, todo.Description, todo.Completed, false)
 	if err != nil {
-		// データ挿入中にエラーが発生した場合、 0 とエラーメッセージを返す
+		// データ挿入中にエラーが発生した場合、0とエラーメッセージを返す
 		return models.Todo{}, fmt.Errorf("failed to insert todo: %v", err)
 	}
 
-	// LastInsertId()で挿入されたレコードの ID を取得
+	// LastInsertId()で挿入されたレコードのIDを取得
 	id, err := result.LastInsertId()
 	if err != nil {
-		// データ取得中にエラーが発生した場合、 0 とエラーメッセージを返す
+		// データ取得中にエラーが発生した場合、0とエラーメッセージを返す
 		return models.Todo{}, fmt.Errorf("failed to get last insert id: %v", err)
 	}
-	// 正常の場合、todo と nil を呼び出し元に返す
+	// 正常の場合、todoとnilを呼び出し元に返す
 	todo.ID = int(id)
 	return todo, nil
 }
 
-// 指定された ID の Todo を更新する
+// 指定されたIDのTodoを更新する
 func (s *SQLiteStorage) Update(id int, todo models.Todo) error {
-	// todos テーブルの title, description, completed カラムを指定された id に基づいて更新
-	query := "UPDATE todos SET title = ?, description = ?, completed = ? WHERE id = ?"
+	// todosテーブルのtitle, description, completedカラムを指定されたidに基づいて更新
+	query := "UPDATE todos SET title = ?, description = ?, completed = ?, deleted = ? WHERE id = ?"
 	// クエリを実行して更新処理を行う
-	result, err := s.DB.Exec(query, todo.Title, todo.Description, todo.Completed, id)
+	result, err := s.DB.Exec(query, todo.Title, todo.Description, todo.Completed, todo.Deleted, id)
 	if err != nil {
 		// クエリの実行に失敗した場合、エラーを返す
 		return fmt.Errorf("failed to update todo: %v", err)
@@ -138,19 +139,19 @@ func (s *SQLiteStorage) Update(id int, todo models.Todo) error {
 		// 更新行数の取得に失敗した場合、エラーを返す
 		return fmt.Errorf("failed to get affected rows: %v", err)
 	}
-	// 更新された行数が 0 の場合（指定された ID が存在しない場合）
+	// 更新された行数が0の場合（指定されたIDが存在しない場合）
 	if rowsAffected == 0 {
-		// "指定された ID が見つからない" というエラーを返す
+		// "指定されたIDが見つからない" というエラーを返す
 		return sql.ErrNoRows
 	}
-	// 更新が成功した場合、nil を返す
+	// 更新が成功した場合、nilを返す
 	return nil
 }
 
-// 指定された ID の Todo を削除
+// 指定されたIDのTodoを削除する
 func (s *SQLiteStorage) Delete(id int) error {
-	// 削除対象の id に基づいて、todos テーブルから該当行を削除するクエリ
-	query := "DELETE FROM todos WHERE id = ?"
+	// 論理削除
+	query := "UPDATE todos SET deleted = 1 WHERE id = ?"
 	// クエリを実行して削除処理を行う
 	result, err := s.DB.Exec(query, id)
 	if err != nil {
@@ -163,11 +164,11 @@ func (s *SQLiteStorage) Delete(id int) error {
 		// 削除行数の取得に失敗した場合、エラーを返す
 		return fmt.Errorf("failed to get affected rows: %v", err)
 	}
-	// 削除された行数が 0 の場合（指定された ID が存在しない場合）
+	// 削除された行数が0の場合（指定されたIDが存在しない場合）
 	if rowsAffected == 0 {
-		// "指定された ID が見つからない" というエラーを返す
+		// "指定されたIDが見つからない"というエラーを返す
 		return sql.ErrNoRows
 	}
-	// 削除が成功した場合、nil を返す
+	// 削除が成功した場合、nilを返す
 	return nil
 }
