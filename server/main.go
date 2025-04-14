@@ -10,10 +10,10 @@ import (
 )
 
 func main() {
-	// SQLite ストレージの初期化
+	// SQLiteストレージの初期化
 	storageInstance, err := sqlite.NewSQLiteStorage("")
 	if err != nil {
-		log.Fatalf("Faild to initialize SQLite storage: %v", err)
+		log.Fatalf("Failed to initialize SQLite storage: %v", err)
 	}
 	// 関数終了時に必ずクローズ
 	defer storageInstance.DB.Close()
@@ -21,7 +21,7 @@ func main() {
 	// ハンドラーにストレージを渡す
 	handlers.SetStorage(storageInstance)
 
-	// CORS 設定（クロスオリジン対応）
+	// CORS設定（クロスオリジン対応）
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -34,7 +34,7 @@ func main() {
 	mux.HandleFunc("/todos", handlers.TodosHandlers)
 	mux.HandleFunc("/todos/", handlers.TodoHandlers)
 
-	// CORS ミドルウェアでラップしたハンドラー
+	// CORSミドルウェアでラップしたハンドラー
 	handler := corsHandler.Handler(mux)
 
 	// サーバー起動

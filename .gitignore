@@ -1,3 +1,5 @@
 # Ignore the tmp directory and its contents
 server/tmp
 server/database/todos.db
+test.http
+backups/todos_backup_*.db
