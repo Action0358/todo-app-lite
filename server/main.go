@@ -13,7 +13,7 @@ func main() {
 	// SQLiteストレージの初期化
 	storageInstance, err := sqlite.NewSQLiteStorage("")
 	if err != nil {
-		log.Fatalf("Faild to initialize SQLite storage: %v", err)
+		log.Fatalf("Failed to initialize SQLite storage: %v", err)
 	}
 	// 関数終了時に必ずクローズ
 	defer storageInstance.DB.Close()
