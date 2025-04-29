@@ -7,10 +7,6 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <script src="js/TodoAPI.js"></script>
-    <script src="js/TodoUI.js"></script>
-    <script src="js/TodoApp.js"></script>
-    <script src="index.js"></script>
 </head>
 <body>
     <header>
@@ -24,6 +20,7 @@
                 <button type="submit">追加</button>
             </form>
             <ul id="todo-list"></ul>
+            <div id="pagination"></div>
         </div>
          <!-- 既存のモーダル（Todoの概要） -->
         <div id="modal" class="modal">
@@ -48,5 +45,13 @@
             </div>
         </div>
     </main>
+    <!-- ライブラリJS -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://unpkg.com/paginationjs@2.1.5/dist/pagination.min.js"></script>
+    <!-- 自作JS -->
+    <script src="js/TodoAPI.js"></script>
+    <script src="js/TodoUI.js"></script>
+    <script src="js/TodoApp.js"></script>
+    <script src="index.js"></script>
 </body>
 </html>
