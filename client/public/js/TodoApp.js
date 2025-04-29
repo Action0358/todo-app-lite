@@ -9,6 +9,8 @@ class TodoApp {
         this.api = new TodoAPI('http://localhost:8080');
         this.ui = new TodoUI(this.elements);
         this.todos = [];
+        this.itemsPerPage = 4;
+        this.currentPage = 1;
 
         this.handlers = {
             onToggle: (id) => this.toggleTodo(id),
@@ -48,26 +50,41 @@ class TodoApp {
             const data = await this.api.fetchTodos();
             // レスポンスが配列であることを確認
             this.todos = Array.isArray(data) ? data.filter(todo => !todo.completed) : [];
-            this.renderTodos();
+            this.setupPagination();
         } catch (error) {
             // エラー時に空の配列を設定してからレンダリング
             this.todos = [];
-            this.renderTodos();
+            this.setupPagination();
             this.handleError(error);
         }
+    }
+
+    setupPagination() {
+        $('#pagination').pagination({
+            dataSource: this.todos,
+            pageSize: this.itemsPerPage,
+            pageNumber: this.currentPage,
+            prevText: '前へ',
+            nextText: '次へ',
+            pageRange: 0,
+            ellipsis: true,
+            ellipsisText: '...',
+            showFirstOnEllipsisShow: true,
+            showLastOnEllipsisShow: true,
+            callback: (data, pagination) => {
+                this.currentPage = pagination.pageNumber;
+                this.ui.renderTodos(data, this.handlers);
+            }
+        });
     }
 
     // Todoの追加
     async addTodo(text) {
         try {
-            const newTodo = await this.api.addTodo(text);
-            // todosが未定義または配列でない場合、初期化
-            if (!Array.isArray(this.todos)) {
-                this.todos = [];
-            }
-            this.todos.push(newTodo);
-            this.renderTodos();
+            await this.api.addTodo(text);
+            await this.fetchTodos();
         } catch (error) {
+            this.fetchTodos();
             this.handleError(error);
         }
     }
@@ -88,7 +105,7 @@ class TodoApp {
             // フロント側では完了状態のTodoをリストから除外する
             this.todos = this.todos.filter(todo => todo.id !== id);
         
-            this.renderTodos();
+            this.fetchTodos();
         } catch (error) {
             this.fetchTodos();
             this.handleError(error);
@@ -108,7 +125,7 @@ class TodoApp {
         try {
             const updatedTodo = await this.api.updateTodo(id, { ...todo, title: newText });
             this.todos = this.todos.map(todo => todo.id === id ? updatedTodo : todo);
-            this.renderTodos();
+            this.fetchTodos();
         } catch (error) {
             this.fetchTodos(); // エラー時に最新のTodoを再取得
             this.handleError(error);
@@ -119,12 +136,7 @@ class TodoApp {
     async deleteTodo(id) {
         try {
             await this.api.deleteTodo(id);
-            if (!Array.isArray(this.todos)) {
-                this.todos = [];
-            } else {
-                this.todos = this.todos.filter(todo => todo.id !== id);
-            }
-            this.renderTodos();
+            await this.fetchTodos();
         } catch (error) {
             this.fetchTodos(); // エラー時に最新のTodoを再取得
             this.handleError(error);
@@ -143,7 +155,7 @@ class TodoApp {
             const updatedTodo = { ...todo, description };
             const result = await this.api.updateTodo(id, updatedTodo);
             this.todos = this.todos.map(todo => todo.id === id ? result : todo);
-            this.renderTodos();
+            this.fetchTodos();
         } catch (error) {
             this.fetchTodos(); // エラー時に最新のTodoを再取得
             this.handleError(error);
